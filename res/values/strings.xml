@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">NoysBrij General</string>
+	<string name="juke_page">juke/common</string>
+	<string name="wiki_page">https://www.noisebridge.net</string>
+	<string name="menu_settings">Settings</string>
+	<string name="erase_label">DEL</string>
+	<string name="enter_label">Enter</string>
+
+</resources>
