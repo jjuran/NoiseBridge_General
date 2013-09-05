@@ -5,7 +5,7 @@ import android.view.animation.AlphaAnimation;
 import android.graphics.LightingColorFilter;
 import android.graphics.drawable.GradientDrawable;
 import android.widget.Button;
-import com.noysbrij.noisebridgeGeneral.*;
+
 
 final public class F
 {

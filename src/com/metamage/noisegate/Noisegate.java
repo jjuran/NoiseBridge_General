@@ -2,15 +2,18 @@ package com.metamage.noisegate;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import com.noysbrij.noisebridgeGeneral.*;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
-
+import com.noysbrij.noisebridgeGeneral.*;
+import com.noysbrij.noisebridgeGeneral.R;
 import java.io.IOException;
+import android.widget.TextView.*;
+import android.content.*;
+import android.util.*;
 
 
 public final class Noisegate extends Activity implements Completion
@@ -125,20 +128,24 @@ public final class Noisegate extends Activity implements Completion
 		}
 	}
 	
-	@Override
-	protected void onCreate( Bundle savedInstanceState )
-	{
-		super.onCreate( savedInstanceState );
+//	@Override
+//	protected void onCreate(Bundle savedInstanceState){
+//		super.onCreate( savedInstanceState );
+//		setContentView( R.layout.noisegate_layout );
+////		requestWindowFeature( Window.FEATURE_NO_TITLE );		
+//		onCreated();
+//	}
+//	
+	public void onCreated(Context context)
+	{	
+	//	setContentView( R.layout.layout_noisegate );
 		
-		requestWindowFeature( Window.FEATURE_NO_TITLE );
-		
-		final Resources resources = getResources();
+		final Resources resources = context.getResources();
 		
 		Data.normalColor  = resources.getInteger( R.color.normal_control  );
 		Data.pressedColor = resources.getInteger( R.color.pressed_control );
-		
-		setContentView( R.layout.main );
-		
+	
+	    Log.i("NBG", "view: "+ resources.getString(R.string.wiki_page).toString());
 		liveKeypad = findViewById( R.id.live_keypad );
 		fakeKeypad = findViewById( R.id.fake_keypad );
 		

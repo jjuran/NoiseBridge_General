@@ -6,8 +6,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import com.metamage.noisegate.F;
-import com.noysbrij.noisebridgeGeneral.*;
+
 
 public class Key extends Button
 {
@@ -31,9 +30,9 @@ public class Key extends Button
 		init();
 	}
 	
-	public void init()
+	private void init()
 	{
-		F.setKeyColor(this, Data.normalColor );
+		F.setKeyColor( this, Data.normalColor );
 	}
 	
 	public void setCounterpart( int id )
@@ -43,7 +42,7 @@ public class Key extends Button
 		counterpart = context.findViewById( id );
 	}
 	
-	public Button getCounterpart()
+	private Button getCounterpart()
 	{
 		if ( counterpart == null )
 		{
@@ -70,12 +69,12 @@ public class Key extends Button
 		return true;
 	}
 	
-	public void beginDrag()
+	private void beginDrag()
 	{
 		 F.setKeyColor( this, Data.pressedColor );
 	}
 	
-	public void updateDrag( float x, float y )
+	private void updateDrag( float x, float y )
 	{
 		final boolean inside = getBackground().getBounds().contains( (int) x, (int) y );
 		
@@ -98,7 +97,7 @@ public class Key extends Button
 		}
 	}
 	
-	public void endDrag()
+	private void endDrag()
 	{
 		if ( !outOfBounds )
 		{

@@ -1,7 +1,6 @@
 package com.metamage.noisegate;
 import com.noysbrij.noisebridgeGeneral.*;
 
-
 final public class Data
 {
 	

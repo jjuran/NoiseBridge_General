@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
-import android.content.*;
-import android.util.*;
-import com.noysbrij.noisebridgeGeneral.*;
+
 
 public final class GetAndDiscardUrlTask extends AsyncTask< Void, Integer, Void >
 {
@@ -19,13 +17,11 @@ public final class GetAndDiscardUrlTask extends AsyncTask< Void, Integer, Void >
 	
 	URL itsUrl;
 	
-//	Completion itsCompletion;
-	Context itsContext;
+	Completion itsCompletion;
 	
 	IOException itsSavedException;
 	
-//	public GetAndDiscardUrlTask( Completion completion, String urlString )
-	public GetAndDiscardUrlTask( Context context, String urlString )
+	public GetAndDiscardUrlTask( Completion completion, String urlString )
 	{
 		if ( busy )
 		{
@@ -36,8 +32,8 @@ public final class GetAndDiscardUrlTask extends AsyncTask< Void, Integer, Void >
 		
 		busy = true;
 		
-  //		itsCompletion = completion;
-		itsContext = context;
+		itsCompletion = completion;
+		
 		itsUrlString = urlString;
 	}
 	
@@ -76,8 +72,7 @@ public final class GetAndDiscardUrlTask extends AsyncTask< Void, Integer, Void >
 		}
 		catch ( IOException e )
 		{
-			Log.e(itsContext.toString(), e.toString());
-	//		itsSavedException = e;
+			itsSavedException = e;
 		}
 		
 		return (Void) null;
@@ -91,7 +86,7 @@ public final class GetAndDiscardUrlTask extends AsyncTask< Void, Integer, Void >
 	{
 		busy = false;
 		
-//		itsContext.call( itsSavedException );
+		itsCompletion.call( itsSavedException );
 	}
 }
 

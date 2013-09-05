@@ -14,16 +14,14 @@ import java.util.concurrent.*;
 import org.apache.cordova.*;
 import org.apache.cordova.api.*;
 import com.noysbrij.noisebridgeGeneral.*;
+import com.metamage.noisegate.*;
+
+//import com.noysbrij.noisebridgeGeneral.R;
+//import com.noysbrij.noisebridgeGeneral.*;
+
 import android.support.v4.view.*;
 import java.lang.ref.*;
 import android.net.*;
-import com.metamage.noisegate.*;
-import com.metamage.noisegate.Key;
-import com.metamage.noisegate.F;
-import com.metamage.noisegate.Teletype;
-import com.metamage.noisegate.GetAndDiscardUrlTask;
-import com.metamage.noisegate.Data;
-import com.metamage.noisegate.Completion;
 
 //import pachakutech.initFileCopy.initFileCopy;
 
@@ -44,24 +42,18 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 //	the pager view
 	private ViewPager pagerView;
 //	adapter what holds the content in the view
-	private ThisPagerAdapter adapter;
+	private LayoutsAdapter adapter;
 //	stuff from metamage, maybe a subclass?
-	private View liveKeypad;
-	private View fakeKeypad;
-	private static final int inputDelay   = 2000;	
-	private Key eraseKey;
-	private Key enterKey;
-	public Teletype tty;	
-	private static final String noisegateUrlBase = "http://pony.noisebridge.net/gate/unlock/?key=";
-	private String code = "";
+	private Noisegate noisegate;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);	
+		noisegate = new Noisegate();
 //		requestWindowFeature( Window.FEATURE_NO_TITLE );
-		adapter = new ThisPagerAdapter();
+		adapter = new LayoutsAdapter();
 		pagerView = (ViewPager) findViewById(R.id.pager_view);
 		pagerView.setAdapter(adapter);
 		
@@ -77,7 +69,7 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 
 	}
 
-	private class ThisPagerAdapter extends PagerAdapter
+	private class LayoutsAdapter extends PagerAdapter
 	{
 
 		@Override
@@ -107,35 +99,41 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 				collection.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			switch (position){
 				case 0:
-					getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
-					layout = inflater.inflate(R.layout.noisegate_layout, null);
-					final Resources resources = getResources();
-
-					Data.normalColor  = resources.getInteger( R.color.normal_control  );
-					Data.pressedColor = resources.getInteger( R.color.pressed_control );
-				
-					liveKeypad = findViewById( R.id.live_keypad );
-					fakeKeypad = findViewById( R.id.fake_keypad );
-
-					eraseKey = (Key) findViewById( R.id.erase );
-					enterKey = (Key) findViewById( R.id.enter );
-
-					eraseKey.setCounterpart( R.id._X );
-	                Log.e(TAG, "id: "+ R.id._X);
-
-					final TextView text = (TextView) findViewById( R.id.terminal );
-
-					tty = new Teletype(text);
-
-					tty.delayInput( inputDelay );
-
-					tty.input( getString( R.string.input ) );
-				    return layout;
+				    //on level with webview_layout
+					layout = inflater.inflate(R.layout.layout_noisegate, null);
+					
+					noisegate.onCreated(getContext());
+//					getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+//					layout = inflater.inflate(R.layout.noisegate_layout, null);
+//					final Resources resources = getResources();
+//
+//					Data.normalColor  = resources.getInteger( R.color.normal_control  );
+//					Data.pressedColor = resources.getInteger( R.color.pressed_control );
+//				
+//					liveKeypad = findViewById( R.id.live_keypad );
+//					fakeKeypad = findViewById( R.id.fake_keypad );
+//
+//					eraseKey = (Button) findViewById( R.id.erase );
+//					enterKey = (Button) findViewById( R.id.enter );
+//
+//				//	eraseKey.setCounterpart( R.id._X );
+//	                Log.e(TAG, "id: "+ R.id._X);
+//
+//					final TextView text = (TextView) findViewById( R.id.terminal );
+//
+//					tty = new Teletype(text);
+//
+//					tty.delayInput( inputDelay );
+//
+//					tty.input( getString( R.string.input ) );
+				    WeakReference<View> noisegateView = new WeakReference<View>((View)layout.findViewById(R.id.noisegate_window));
+					((ViewPager)collection).addView(layout, 0);
+					
 				case 1:
 								
 					getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
 					
-					layout = inflater.inflate(R.layout.webview_layout, null);
+					layout = inflater.inflate(R.layout.layout_webview, null);
 					WeakReference<WebView> webViewRef = new WeakReference<WebView>((WebView)layout.findViewById(R.id.webview_window));
 
 					webViewRef.get().getSettings().setJavaScriptEnabled(true);
@@ -159,13 +157,13 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 						});
 					webViewRef.get().setWebChromeClient(new WebChromeClient());
 			        webViewRef.get().loadUrl(ponyURL+getString(R.string.juke_page));
-					((ViewPager)collection).addView((View)layout, 0);
+					((ViewPager)collection).addView(layout, 0);
 		            break;
 				case 2:
 					
 					getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
 
-					layout = inflater.inflate(R.layout.webview_layout, null);
+					layout = inflater.inflate(R.layout.layout_webview, null);
 					WeakReference<WebView> webViewRef2 = new WeakReference<WebView>((WebView)layout.findViewById(R.id.webview_window));
 
 					webViewRef2.get().getSettings().setJavaScriptEnabled(true);
@@ -452,99 +450,99 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 	}
 	
 /********noisegate functions*******/
-	private void unlockWithKey( CharSequence urlEncodedKey )
-	{
-		final String urlString = noisegateUrlBase + urlEncodedKey;
-
-		new GetAndDiscardUrlTask( this, urlString ).execute();
-	}
-
-	public void call( IOException exception )
-	{
-		fadeSubviews( fakeKeypad, 0 );
-
-		tty.stopBlinking();
-
-		tty.append( getString( R.string.complete ) );
-
-		if ( exception != null )
-		{
-			tty.setText( getString( R.string.exception ) );
-		}
-	}
-
-	private void fadeSubviews( View v, int toAlpha )
-	{
-		if ( v instanceof ViewGroup )
-		{
-			ViewGroup vg = (ViewGroup) v;
-
-			final int n = vg.getChildCount();
-
-			for ( int i = 0;  i < n;  ++i )
-			{
-				fadeSubviews( vg.getChildAt( i ), toAlpha );
-			}
-		}
-		else
-		{
-			F.setKeyColor( (Button) v, getResources().getInteger( R.color.disabled_control ) );
-
-			F.fadeViewToAlpha( v, toAlpha );
-		}
-	}
-
-	private void updateText()
-	{
-		tty.startBlinking();
-
-		tty.setText( getString( R.string.input ) + code );
-	}
-
-	public void onNumericKey( View v )
-	{
-		if ( code.length() == 0 )
-		{
-			F.fadeViewToAlpha( eraseKey, 1 );
-			F.fadeViewToAlpha( enterKey, 1 );
-		}
-
-		Button key = (Button) v;
-
-		code += key.getText();
-
-		updateText();
-	}
-
-	public void onEraseKey( View v )
-	{
-		if ( code.length() != 0 )
-		{
-			code = code.substring( 0, code.length() - 1 );
-
-			if ( code.length() == 0 )
-			{
-				F.fadeViewToAlpha( eraseKey, 0 );
-				F.fadeViewToAlpha( enterKey, 0 );
-			}
-		}
-
-		updateText();
-	}
-
-	public void onEnterKey( View v )
-	{
-		updateText();
-
-		tty.input( "\n\n" );
-
-		if ( code.length() != 0 )
-		{
-			fadeSubviews( fakeKeypad, 1 );
-
-			unlockWithKey( code );
-		}
-	}
+//	private void unlockWithKey( CharSequence urlEncodedKey )
+//	{
+//		final String urlString = noisegateUrlBase + urlEncodedKey;
+//
+//		new GetAndDiscardUrlTask( this, urlString ).execute();
+//	}
+//
+//	public void call( IOException exception )
+//	{
+//		fadeSubviews( fakeKeypad, 0 );
+//
+//		tty.stopBlinking();
+//
+//		tty.append( getString( R.string.complete ) );
+//
+//		if ( exception != null )
+//		{
+//			tty.setText( getString( R.string.exception ) );
+//		}
+//	}
+//
+//	private void fadeSubviews( View v, int toAlpha )
+//	{
+//		if ( v instanceof ViewGroup )
+//		{
+//			ViewGroup vg = (ViewGroup) v;
+//
+//			final int n = vg.getChildCount();
+//
+//			for ( int i = 0;  i < n;  ++i )
+//			{
+//				fadeSubviews( vg.getChildAt( i ), toAlpha );
+//			}
+//		}
+//		else
+//		{
+//			F.setKeyColor( (Button) v, getResources().getInteger( R.color.disabled_control ) );
+//
+//			F.fadeViewToAlpha( v, toAlpha );
+//		}
+//	}
+//
+//	private void updateText()
+//	{
+//		tty.startBlinking();
+//
+//		tty.setText( getString( R.string.input ) + code );
+//	}
+//
+//	public void onNumericKey( View v )
+//	{
+//		if ( code.length() == 0 )
+//		{
+//			F.fadeViewToAlpha( eraseKey, 1 );
+//			F.fadeViewToAlpha( enterKey, 1 );
+//		}
+//
+//		Button key = (Button) v;
+//
+//		code += key.getText();
+//
+//		updateText();
+//	}
+//
+//	public void onEraseKey( View v )
+//	{
+//		if ( code.length() != 0 )
+//		{
+//			code = code.substring( 0, code.length() - 1 );
+//
+//			if ( code.length() == 0 )
+//			{
+//				F.fadeViewToAlpha( eraseKey, 0 );
+//				F.fadeViewToAlpha( enterKey, 0 );
+//			}
+//		}
+//
+//		updateText();
+//	}
+//
+//	public void onEnterKey( View v )
+//	{
+//		updateText();
+//
+//		tty.input( "\n\n" );
+//
+//		if ( code.length() != 0 )
+//		{
+//			fadeSubviews( fakeKeypad, 1 );
+//
+//			unlockWithKey( code );
+//		}
+//	}
 //    @Override
 //	protected Dialog onCreateDialog(int id) {
 //		super.onCreateDialog(id);

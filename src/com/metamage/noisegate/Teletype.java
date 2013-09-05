@@ -2,7 +2,7 @@ package com.metamage.noisegate;
 
 import android.os.Handler;
 import android.widget.TextView;
-import com.noysbrij.noisebridgeGeneral.*;
+
 
 public final class Teletype
 {
@@ -67,12 +67,12 @@ public final class Teletype
 		}
 	};
 	
-	public Teletype( TextView tv )
+	Teletype( TextView tv )
 	{
 		textView = tv;
 	}
 	
-	public void update()
+	void update()
 	{
 		CharSequence newText = text;
 		
@@ -94,14 +94,14 @@ public final class Teletype
 		textView.setText( newText );
 	}
 	
-	public void clear()
+	void clear()
 	{
 		text = "";
 		
 		textView.setText( "" );
 	}
 	
-    public void setText( String s )
+	void setText( String s )
 	{
 		text = s;
 		
@@ -110,7 +110,7 @@ public final class Teletype
 		mark = -1;
 	}
 	
-	public void append( CharSequence chars )
+	void append( CharSequence chars )
 	{
 		text = text + chars;
 		
@@ -119,7 +119,7 @@ public final class Teletype
 		update();
 	}
 	
-	public void startBlinking()
+	void startBlinking()
 	{
 		if ( cursorState < 0 )
 		{
@@ -129,12 +129,12 @@ public final class Teletype
 		}
 	}
 	
-	public void stopBlinking()
+	void stopBlinking()
 	{
 		cursorState = -1;
 	}
 	
-	public void startInput()
+	void startInput()
 	{
 		if ( mark < 0 )
 		{
@@ -144,19 +144,19 @@ public final class Teletype
 		}
 	}
 	
-	public void stopInput()
+	void stopInput()
 	{
 		mark = -1;
 		
 		update();
 	}
 	
-	public void delayInput( int delay )
+	void delayInput( int delay )
 	{
 		inputDelay = delay;
 	}
 	
-	public void input( CharSequence chars )
+	void input( CharSequence chars )
 	{
 		startBlinking();
 		startInput();
