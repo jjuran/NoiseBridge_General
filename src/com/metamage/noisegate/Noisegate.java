@@ -147,7 +147,7 @@ public final class Noisegate extends NoiseBridgeGeneral implements Completion
 //	
 	public void onCreated()
 	{	
-	//	setContentView( R.layout.layout_noisegate );
+//		setContentView( R.layout.layout_noisegate );
 		
 		final Resources resources = context.getResources();
 		

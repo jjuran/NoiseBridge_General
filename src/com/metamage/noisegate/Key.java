@@ -46,6 +46,7 @@ public class Key extends Button
 	
 	public void setKeyContext(Context thisContext){
 		this.context = thisContext;
+		
 		Log.e("NBG", "context for "+this.context+ " is "+thisContext);
 	}
 	

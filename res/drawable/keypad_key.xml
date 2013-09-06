@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-	<com.metamage.noisegate.Key
+<shape
 		xmlns:android="http://schemas.android.com/apk/res/android">
-<shape 
+
 	android:shape="rectangle"
 	>
 	<size
@@ -16,4 +16,4 @@
 		android:color="@color/white"
 		/>
 </shape>
-	</com.metamage.noisegate.Key>
+

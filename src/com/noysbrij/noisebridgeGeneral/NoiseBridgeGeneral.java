@@ -20,7 +20,7 @@ import java.util.concurrent.*;
 import org.apache.cordova.*;
 import org.apache.cordova.api.*;
 import com.noysbrij.noisebridgeGeneral.*;
-import com.metamage.noisegate.*;
+//import com.metamage.noisegate.*;
 
 //import com.noysbrij.noisebridgeGeneral.R;
 //import com.noysbrij.noisebridgeGeneral.*;
@@ -48,14 +48,14 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 //	adapter what holds the content in the view
 	private LayoutsAdapter adapter;
 //	stuff from metamage, maybe a subclass?
-	private Noisegate noisegate;
+//	private Noisegate noisegate;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);	
-		noisegate = new Noisegate(getActivity(), getContext());
+//		noisegate = new Noisegate(getActivity(), getContext());
 //		requestWindowFeature( Window.FEATURE_NO_TITLE );
 		adapter = new LayoutsAdapter();
 		pagerView = (ViewPager) findViewById(R.id.pager_view);
@@ -104,9 +104,9 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 			switch (position){
 				case 0:
 				    //on level with webview_layout
-					layout = inflater.inflate(R.layout.layout_noisegate, null);
+		//			layout = inflater.inflate(R.layout.layout_noisegate, null);
 					
-					noisegate.onCreated();
+		//			noisegate.onCreated();
 //					getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
 //					layout = inflater.inflate(R.layout.noisegate_layout, null);
 //					final Resources resources = getResources();
@@ -130,8 +130,8 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 //					tty.delayInput( inputDelay );
 //
 //					tty.input( getString( R.string.input ) );
-				    WeakReference<View> noisegateView = new WeakReference<View>((View)layout.findViewById(R.id.noisegate_window));
-					((ViewPager)collection).addView(layout, 0);
+		//		    WeakReference<View> noisegateView = new WeakReference<View>((View)layout.findViewById(R.id.noisegate_window));
+				//	((ViewPager)collection).addView(layout, 0);
 					
 				case 1:
 								
