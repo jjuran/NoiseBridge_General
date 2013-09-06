@@ -7,6 +7,12 @@ import android.os.*;
 import android.util.*;
 import android.view.*;
 import android.webkit.*;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.*;
 import java.io.*;
 import java.lang.reflect.*;
@@ -22,8 +28,6 @@ import com.metamage.noisegate.*;
 import android.support.v4.view.*;
 import java.lang.ref.*;
 import android.net.*;
-
-//import pachakutech.initFileCopy.initFileCopy;
 
 public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 {
@@ -51,7 +55,7 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 	{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);	
-		noisegate = new Noisegate();
+		noisegate = new Noisegate(getActivity(), getContext());
 //		requestWindowFeature( Window.FEATURE_NO_TITLE );
 		adapter = new LayoutsAdapter();
 		pagerView = (ViewPager) findViewById(R.id.pager_view);
@@ -102,7 +106,7 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 				    //on level with webview_layout
 					layout = inflater.inflate(R.layout.layout_noisegate, null);
 					
-					noisegate.onCreated(getContext());
+					noisegate.onCreated();
 //					getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
 //					layout = inflater.inflate(R.layout.noisegate_layout, null);
 //					final Resources resources = getResources();

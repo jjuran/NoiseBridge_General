@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import com.noysbrij.noisebridgeGeneral.*;
+import android.util.*;
 
 
 public class Key extends Button
@@ -15,6 +17,7 @@ public class Key extends Button
 	private boolean outOfBounds = false;
 	
 	private View counterpart;
+	private Context context;
 	
 	public Key( Context context, AttributeSet attrs, int defStyle )
 	{
@@ -30,16 +33,27 @@ public class Key extends Button
 		init();
 	}
 	
+	public Key( Context context ){
+		super( context );
+		setKeyContext(context);
+		init();
+	}
+	
 	private void init()
 	{
 		F.setKeyColor( this, Data.normalColor );
 	}
 	
+	public void setKeyContext(Context thisContext){
+		this.context = thisContext;
+		Log.e("NBG", "context for "+this.context+ " is "+thisContext);
+	}
+	
 	public void setCounterpart( int id )
 	{
-		Activity context = (Activity) getContext();
+		Activity activityContext = (Activity) this.context;
 		
-		counterpart = context.findViewById( id );
+		counterpart = activityContext.findViewById( id );
 	}
 	
 	private Button getCounterpart()

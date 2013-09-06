@@ -4,7 +4,9 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.graphics.LightingColorFilter;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.widget.Button;
+import android.graphics.drawable.*;
 
 
 final public class F
@@ -25,7 +27,8 @@ final public class F
 	
 	public static void setKeyColor( Button key, int color )
 	{
-		GradientDrawable background = (GradientDrawable) key.getBackground();
+	 	GradientDrawable background = (GradientDrawable) key.getBackground();
+	//	StateListDrawable background = (StateListDrawable) key.getBackground();
 		
 		background.setColorFilter( new LightingColorFilter( color, 0 ) );
 		

@@ -16,9 +16,13 @@ import android.content.*;
 import android.util.*;
 
 
-public final class Noisegate extends Activity implements Completion
+public final class Noisegate extends NoiseBridgeGeneral implements Completion
 {
+	//activity and context to shared view with.
+	protected Activity activity;
+	protected Context context;
 	
+	//metamage's vars
 	private static final int inputDelay   = 2000;
 	private static final int fadeDuration = 200;
 	
@@ -33,6 +37,11 @@ public final class Noisegate extends Activity implements Completion
 	private Teletype tty;
 	
 	private String code = "";
+	
+	public Noisegate(Activity activity, Context context){
+		this.activity = activity;
+		this.context = context;
+	}
 	
 	private void unlockWithKey( CharSequence urlEncodedKey )
 	{
@@ -136,22 +145,28 @@ public final class Noisegate extends Activity implements Completion
 //		onCreated();
 //	}
 //	
-	public void onCreated(Context context)
+	public void onCreated()
 	{	
 	//	setContentView( R.layout.layout_noisegate );
 		
 		final Resources resources = context.getResources();
 		
+		
 		Data.normalColor  = resources.getInteger( R.color.normal_control  );
 		Data.pressedColor = resources.getInteger( R.color.pressed_control );
 	
-	    Log.i("NBG", "view: "+ resources.getString(R.string.wiki_page).toString());
-		liveKeypad = findViewById( R.id.live_keypad );
-		fakeKeypad = findViewById( R.id.fake_keypad );
+//	    Log.i("NBG", "view: "+ resources.getString(R.string.wiki_page).toString());
+		liveKeypad = activity.findViewById( R.id.live_keypad );
+		fakeKeypad = activity.findViewById( R.id.fake_keypad );
+
+		eraseKey = new Key(context);
+		eraseKey.setKeyContext(context);
+		enterKey.setKeyContext(context);
 		
-		eraseKey = (Key) findViewById( R.id.erase );
-		enterKey = (Key) findViewById( R.id.enter );
-		
+		eraseKey = (Key) activity.findViewById( R.id.erase );
+		enterKey = (Key) activity.findViewById( R.id.enter );
+ //       Log.e("NBG", context.toString());	
+				
 		eraseKey.setCounterpart( R.id._X );
 		
 		final TextView text = (TextView) findViewById( R.id.terminal );
