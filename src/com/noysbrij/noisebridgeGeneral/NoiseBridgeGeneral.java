@@ -20,6 +20,7 @@ import java.util.concurrent.*;
 import org.apache.cordova.*;
 import org.apache.cordova.api.*;
 import com.noysbrij.noisebridgeGeneral.*;
+import com.loopj.android.http.*;
 //import com.metamage.noisegate.*;
 
 //import com.noysbrij.noisebridgeGeneral.R;
@@ -28,6 +29,7 @@ import com.noysbrij.noisebridgeGeneral.*;
 import android.support.v4.view.*;
 import java.lang.ref.*;
 import android.net.*;
+import java.util.*;
 
 public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 {
@@ -47,6 +49,13 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 	private ViewPager pagerView;
 //	adapter what holds the content in the view
 	private LayoutsAdapter adapter;
+	//ticvkets
+	Tickets tickets;
+	// sucwessful json read updates listview
+	private ReadJson readJson;
+	private JsonRequest jsonRequest;
+	private TicketsAdapter ticketsAdapter;
+	protected ListView listView;
 //	stuff from metamage, maybe a subclass?
 //	private Noisegate noisegate;
 	
@@ -55,12 +64,15 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 	{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);	
+		readJson = new ReadJson();
 //		noisegate = new Noisegate(getActivity(), getContext());
 //		requestWindowFeature( Window.FEATURE_NO_TITLE );
 		adapter = new LayoutsAdapter();
+		jsonRequest = new JsonRequest();
 		pagerView = (ViewPager) findViewById(R.id.pager_view);
 		pagerView.setAdapter(adapter);
-		
+		listView = (ListView)findViewById(R.id.list_view);
+		jsonRequest.getTickets();
 //	http://pony.noise/juke/common
 //		String htmlPage = getHtmlFromAsset(getString(R.string.game_page));
 //		if (htmlPage != null)
@@ -73,6 +85,26 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 
 	}
 
+	public class JsonRequest {
+		public void getTickets() {
+			AsyncHttpClient client = new AsyncHttpClient();
+
+			client.get("http://noiseapp.herokuapp.com/tickets.json", new AsyncHttpResponseHandler() {
+					@Override
+					public void onSuccess(String response) {
+					//	System.out.println(response);
+						try
+						{
+							tickets = readJson.readTickets( new ByteArrayInputStream(response.getBytes("UTF-8")) );
+							//sort the tickets
+							//set flag for existence of tickets
+						}
+						catch (IOException e)
+						{}
+					}
+				});
+		}
+	}
 	private class LayoutsAdapter extends PagerAdapter
 	{
 
@@ -132,6 +164,8 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 //					tty.input( getString( R.string.input ) );
 		//		    WeakReference<View> noisegateView = new WeakReference<View>((View)layout.findViewById(R.id.noisegate_window));
 				//	((ViewPager)collection).addView(layout, 0);
+					getWindow().setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+					layout = inflater.inflate(R.layout.layout_tickets, null);
 					
 				case 1:
 								
@@ -193,6 +227,8 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 			        webViewRef2.get().loadUrl(getString(R.string.wiki_page));
 					((ViewPager)collection).addView((View)layout, 0);
 		            break;
+				case 3:
+					
 			}
 			return layout;
 		}
@@ -289,16 +325,43 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 //			} 
 //		}
 //	}
-
-	public void onStop()
+		
+		
+	private class TicketsAdapter extends ArrayAdapter<Ticket>
 	{
-		super.onStop();
-	}
 
-	public static String getApplicationName(Context context)
-	{ 
-	    int stringId = context.getApplicationInfo().labelRes; 
-		return context.getString(stringId); 
+		private ArrayList<Ticket> tickets;
+
+		public TicketsAdapter(Context context, int textViewResourceId, ArrayList<Ticket> tickets)
+		{
+			super(context, textViewResourceId, tickets);
+			this.tickets = tickets;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent)
+		{
+			View v = convertView;
+			if (v == null)
+			{
+				LayoutInflater vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				v = vi.inflate(R.layout.row, null);
+			}
+			Ticket o = tickets.get(position);
+			if (o != null)
+			{
+				TextView tt = (TextView) v.findViewById(R.id.toptext);
+				TextView bt = (TextView) v.findViewById(R.id.bottomtext);
+				if (tt != null)
+				{
+					tt.setText(R.string.complexity_label + o.complexity);                            }
+				if (bt != null)
+				{
+					bt.setText(R.string.created_at_label + o.created_at);
+				}
+			}
+			return v;
+		}
 	}
 
 	public class webViewClient extends WebViewClient
@@ -368,23 +431,51 @@ public class NoiseBridgeGeneral extends Activity implements CordovaInterface
 			Log.d(TAG, "counter called, testCounter = " + testCounter);
 		}
 	}
-	private String getHtmlFromAsset(String htmlAsset) {
-		InputStream is;
-		StringBuilder builder = new StringBuilder();
-        String htmlString = null;
-        try {
-			is = getAssets().open(htmlAsset);
-			if (is != null) {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-				String line;
-                while ((line = reader.readLine()) != null) {
-				    builder.append(line);
-                }
-                htmlString = builder.toString();
-			}
-		} catch (IOException e) {e.printStackTrace();}
+//	private String getHtmlFromAsset(String htmlAsset) {
+//		InputStream is;
+//		StringBuilder builder = new StringBuilder();
+//        String htmlString = null;
+//        try {
+//			is = getAssets().open(htmlAsset);
+//			if (is != null) {
+//				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+//				String line;
+//                while ((line = reader.readLine()) != null) {
+//				    builder.append(line);
+//                }
+//                htmlString = builder.toString();
+//			}
+//		} catch (IOException e) {e.printStackTrace();}
+//
+//        return htmlString;
+//	}	
+	public void displayTickets()
+	{
 
-        return htmlString;
+		try
+		{
+			Log.i(TAG, "Debug #1");
+			this.ticketsAdapter = new TicketsAdapter(this, R.layout.row, tickets.tickets);
+			ticketsAdapter.notifyDataSetChanged();
+			listView.setAdapter(ticketsAdapter);
+			//	textId.setText(R.string.textIdLabel + "" + result.profileId.get(Integer.parseInt(enterId.getText().toString())).matches.get(5).score);
+		}
+		catch (NumberFormatException e)
+		{
+			Log.i(TAG, "Debug #5");
+			Toast.makeText(this, R.string.bad_int, Toast.LENGTH_SHORT).show();
+		}
+	}	
+	
+	public void onStop()
+	{
+		super.onStop();
+	}
+
+	public static String getApplicationName(Context context)
+	{ 
+	    int stringId = context.getApplicationInfo().labelRes; 
+		return context.getString(stringId); 
 	}
 	
 

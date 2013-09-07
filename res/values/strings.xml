@@ -7,5 +7,17 @@
 	<string name="menu_settings">Settings</string>
 	<string name="erase_label">DEL</string>
 	<string name="enter_label">Enter</string>
-
+	<string name="no_tickets_label">No tickets to display; I am disappoint</string>
+	<string name="complexity_label">Complexity: </string>
+	<string name="created_at_label">Created At: </string>
+	<string name="description_label">Description: </string>
+	<string name="do_at_label"></string>
+	<string name="id_label"></string>
+	<string name="owner_id_label">Owner ID: </string>
+	<string name="requestor_id_label">Requestor ID: </string>
+	<string name="status_label">Status: </string>
+	<string name="ticket_type_label">Ticket type: </string>
+	<string name="title_label">Title: </string>
+	<string name="updated_at_label">Updated at: </string>
+	<string name="bad_int">Bad integer</string>
 </resources>
